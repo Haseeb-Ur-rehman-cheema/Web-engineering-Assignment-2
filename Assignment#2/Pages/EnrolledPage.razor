@@ -1,0 +1,37 @@
+﻿@page "/enrolled"
+@using Assignment_2.Data
+
+<h3>Edit Mark</h3>
+
+<EditForm Model="@Enrolled" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+
+    
+    <div class="form-group">
+        <label for="sid">Student ID</label>
+        <InputNumber id="sid" @bind-Value="Enrolled.sid" class="form-control" />
+        <ValidationMessage For="@(() => Enrolled.sid)" />
+    </div>
+
+    <div class="form-group">
+        <label for="cid">Class ID</label>
+        <InputNumber id="cid" @bind-Value="Enrolled.cid" class="form-control" />
+        <ValidationMessage For="@(() => Enrolled.cid)" />
+    </div>
+
+    
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+@code {
+    private Enrolled Enrolled { get; set; } = new Enrolled();
+
+    private void HandleValidSubmit()
+    {
+        // Handle the submission logic (e.g., display a message)
+        // In a real application, you would typically save the data to the database
+        // or perform other necessary actions.
+        Console.WriteLine("Mark data submitted successfully!");
+    }
+}

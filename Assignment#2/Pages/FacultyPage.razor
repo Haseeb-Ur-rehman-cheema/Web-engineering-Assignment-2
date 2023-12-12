@@ -1,0 +1,122 @@
+﻿@page "/faculty"
+@using Assignment_2.Data
+@inject SchoolDbContext DbContext
+
+<h3>Edit Faculty</h3>
+
+<!-- Add a table to display the list of faculty members -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Faculty Name</th>
+            <th>Department ID</th>
+            <th>Standing</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var faculty in faculties)
+        {
+            <tr>
+                <td>@faculty.fname</td>
+                <td>@faculty.deptid</td>
+                <td>@faculty.standing</td>
+                <td>
+                    <!-- Add a delete button for each faculty member -->
+                    <button class="btn btn-danger" @onclick="() => DeleteFaculty(faculty.fid)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Add a form to edit or add a new faculty member -->
+<h3>Edit/Add Faculty</h3>
+<EditForm Model="@Faculty" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group">
+        <label for="fname">Faculty Name</label>
+        <InputText id="fname" @bind-Value="Faculty.fname" class="form-control" />
+        <ValidationMessage For="@(() => Faculty.fname)" />
+    </div>
+
+    <div class="form-group">
+        <label for="deptid">Department ID</label>
+        <InputText id="deptid" @bind-Value="Faculty.deptid" class="form-control" />
+        <ValidationMessage For="@(() => Faculty.deptid)" />
+    </div>
+
+    <div class="form-group">
+        <label for="standing">Standing</label>
+        <InputNumber id="standing" @bind-Value="Faculty.standing" class="form-control" />
+        <ValidationMessage For="@(() => Faculty.standing)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+@code {
+    private Faculty Faculty { get; set; } = new Faculty();
+    private List<Faculty> faculties;
+
+    protected override void OnInitialized()
+    {
+        // Initialize the list of faculty members by fetching data from the database
+        faculties = DbContext.Faculties.ToList();
+    }
+    public void facultyclasses()
+    {
+        var facultyClassesCount = dbContext.Faculties
+    .Select(faculty => new
+    {
+        FacultyName = faculty.Name,
+        NumberOfClasses = dbContext.Classes
+            .Count(@class => @class.FacultyId == faculty.Id)
+    })
+    .OrderByDescending(result => result.NumberOfClasses)
+    .ToList();
+
+    }
+
+    private void HandleValidSubmit()
+    {
+        // Add or update the faculty member in the database
+        if (Faculty.fid == 0)
+        {
+            // If the faculty ID is 0, it's a new faculty member, so add them to the database
+            DbContext.Faculties.Add(Faculty);
+        }
+        else
+        {
+            // If the faculty ID is not 0, it's an existing faculty member, so update them in the database
+            DbContext.Faculties.Update(Faculty);
+        }
+
+        DbContext.SaveChanges();
+
+        // Clear the form after submission
+        Faculty = new Faculty();
+
+        // Refresh the list of faculty members
+        faculties = DbContext.Faculties.ToList();
+
+        Console.WriteLine("Faculty data submitted successfully!");
+    }
+
+    private void DeleteFaculty(int facultyId)
+    {
+        // Delete the faculty member from the database
+        var facultyToDelete = DbContext.Faculties.Find(facultyId);
+        if (facultyToDelete != null)
+        {
+            DbContext.Faculties.Remove(facultyToDelete);
+            DbContext.SaveChanges();
+        }
+
+        // Refresh the list of faculty members
+        faculties = DbContext.Faculties.ToList();
+
+        Console.WriteLine("Faculty member deleted successfully!");
+    }
+}

@@ -1,0 +1,143 @@
+﻿@page "/class"
+@using Assignment_2.Data
+@using Microsoft.EntityFrameworkCore
+@inject SchoolDbContext DbContext
+
+<h3>Edit Class</h3>
+
+<!-- Add a table to display the list of classes -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Class Name</th>
+            <th>Room Number</th>
+            <th>Faculty</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var classItem in Classes)
+        {
+            <tr>
+                <td>@classItem.name</td>
+                <td>@classItem.room_number</td>
+                <td>@classItem.fid</td>
+                <td>
+                    <!-- Add a delete button for each class -->
+                    <button class="btn btn-danger" @onclick="() => DeleteClass(classItem.cid)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Add a form to edit or add a new class -->
+<h3>Edit/Add Class</h3>
+<EditForm Model="@Class" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group">
+        <label for="name">Class Name</label>
+        <InputText id="name" @bind-Value="Class.name" class="form-control" />
+        <ValidationMessage For="@(() => Class.name)" />
+    </div>
+
+    <div class="form-group">
+        <label for="room_number">Room Number</label>
+        <InputNumber id="room_number" @bind-Value="Class.room_number" class="form-control" />
+        <ValidationMessage For="@(() => Class.room_number)" />
+    </div>
+
+    <div class="form-group">
+        <label for="fid">Faculty</label>
+        <select id="fid" @bind="Class.fid" class="form-control">
+            @foreach (var faculty in Faculties)
+            {
+                <option value="@faculty.fid">@faculty.fname</option>
+            }
+        </select>
+        <ValidationMessage For="@(() => Class.fid)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</EditForm>
+
+<h3>Classes with More Than 100 Students</h3>
+
+<!-- Display classes with more than 100 students -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Class Name</th>
+            <th>Room Number</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var classInfo in Classes100Students)
+        {
+            <tr>
+                <td>@classInfo.name</td>
+                <td>@classInfo.room_number</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private Class Class { get; set; } = new Class();
+    private List<Class> Classes { get; set; }
+    private List<Faculty> Faculties { get; set; } = new List<Faculty>();
+    private List<Class> Classes100Students { get; set; }
+    protected override void OnInitialized()
+    {
+        // Fetch classes, faculties, and classes with more than 100 students from the database
+        Classes = DbContext.Classes.Include(c => c.fid).ToList();
+        Faculties = DbContext.Faculties.ToList();
+
+        // LINQ query to get classes with more than 100 students
+        Classes100Students = DbContext.Classes
+            .Where(c => c.Enrolleds.Count > 100)
+            .ToList();
+    }
+
+    private void HandleValidSubmit()
+    {
+        // Add or update the class in the database
+        if (Class.cid == 0)
+        {
+            // If the class ID is 0, it's a new class, so add it to the database
+            DbContext.Classes.Add(Class);
+        }
+        else
+        {
+            // If the class ID is not 0, it's an existing class, so update it in the database
+            DbContext.Classes.Update(Class);
+        }
+
+        DbContext.SaveChanges();
+
+        // Clear the form after submission
+        Class = new Class();
+
+        // Refresh the list of classes
+        Classes = DbContext.Classes.Include(c => c.fid).ToList();
+
+        Console.WriteLine("Class data submitted successfully!");
+    }
+
+    private void DeleteClass(int classId)
+    {
+        // Delete the class from the database
+        var classToDelete = DbContext.Classes.Find(classId);
+        if (classToDelete != null)
+        {
+            DbContext.Classes.Remove(classToDelete);
+            DbContext.SaveChanges();
+        }
+
+        // Refresh the list of classes
+        Classes = DbContext.Classes.Include(c => c.fid).ToList();
+
+        Console.WriteLine("Class deleted successfully!");
+    }
+}
