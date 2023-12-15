@@ -12,5 +12,7 @@ namespace Assignment_2.Data
         public string major { get; set; }
         [Required]
         public int standing { get; set; }
+        [Required]
+        public String marks { get; set; }
     }
 }

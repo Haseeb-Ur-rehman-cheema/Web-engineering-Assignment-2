@@ -65,21 +65,7 @@
         // Initialize the list of faculty members by fetching data from the database
         faculties = DbContext.Faculties.ToList();
     }
-    public void facultyclasses()
-    {
-        var facultyClassesCount = dbContext.Faculties
-    .Select(faculty => new
-    {
-        FacultyName = faculty.Name,
-        NumberOfClasses = dbContext.Classes
-            .Count(@class => @class.FacultyId == faculty.Id)
-    })
-    .OrderByDescending(result => result.NumberOfClasses)
-    .ToList();
-
-    }
-
-    private void HandleValidSubmit()
+     private void HandleValidSubmit()
     {
         // Add or update the faculty member in the database
         if (Faculty.fid == 0)

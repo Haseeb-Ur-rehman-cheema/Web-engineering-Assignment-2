@@ -60,74 +60,18 @@
     private Student Student { get; set; } = new Student();
     List<Student> students;
 
-    protected override void OnInitialized()
-    {
-        var studentsWithoutClassesInDept22 = dbContext.Students
-    .Where(student => !dbContext.Enrolleds
-        .Any(Enrolleds => Enrolleds.sid == student.sid &&
-                           dbContext.Classes
-                               .Any(@class => @class.cid == Enrolleds.cid &&
-                                              dbContext.Faculties
-                                                  .Any(faculty => faculty.fid == @class.fid &&
-                                                                  faculty.deptid == 22))))
-    .Select(student => new
-    {
-        student.sid,
-        student.major
-    })
-    .ToList();
-    }
-    public void studentswithoutmarks()
-    {
-        var studentsWithoutMarks = dbContext.Students
-    .Where(student => dbContext.Enrolleds
-        .Any(Enrolleds => Enrolleds.sid == student.sid &&
-                           dbContext.marks
-                               .All(mark => mark.sid != student.sid)))
-    .Select(student => new
-    {
-        student.Id,
-        student.Name
-    })
-    .ToList();
-
-    }
-    public void Studentenrollmoresubjects()
-    {
-        var studentsEnrolledInMoreThanTwoClasses = dbContext.Students
-    .Where(student => dbContext.Enrolleds
-        .Count(enrollment => enrollment.sid == student.sid) > 2)
-    .Select(student => new
-    {
-        StudentName = student.sname,
-        NumberOfClassesEnrolled = dbContext.Enrolleds
-            .Count(Enrolled => Enrolled.sid == student.sid)
-    })
-    .ToList();
-
-    }
     private void HandleValidSubmit()
     {
-        // Add or update the student in the database
         if (Student.sid == 0)
         {
-            // If the student ID is 0, it's a new student, so add them to the database
             dbContext.Students.Add(Student);
         }
         else
         {
-            // If the student ID is not 0, it's an existing student, so update them in the database
             dbContext.Students.Update(Student);
         }
-
         dbContext.SaveChanges();
-
-        // Clear the form after submission
-        Student = new Student();
-
-        // Refresh the list of students
         students = dbContext.Students.ToList();
-
         Console.WriteLine("Student data submitted successfully!");
     }
 

@@ -91,13 +91,7 @@
     protected override void OnInitialized()
     {
         // Fetch classes, faculties, and classes with more than 100 students from the database
-        Classes = DbContext.Classes.Include(c => c.fid).ToList();
-        Faculties = DbContext.Faculties.ToList();
-
-        // LINQ query to get classes with more than 100 students
-        Classes100Students = DbContext.Classes
-            .Where(c => c.Enrolleds.Count > 100)
-            .ToList();
+       
     }
 
     private void HandleValidSubmit()

@@ -13,5 +13,7 @@ namespace Assignment_2.Data
         public int room_number { get; set; }
         [ForeignKey(nameof(Faculty))]
         public int fid { get; set; }
+        public Enrolled enrolled { get; set; }
+        public Faculty faculty { get; set; }
     }
 }

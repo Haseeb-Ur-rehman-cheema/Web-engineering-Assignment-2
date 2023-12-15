@@ -12,5 +12,8 @@ namespace Assignment_2.Data
         public int sid { get; set; }
         [ForeignKey(nameof(Class))]
         public int cid { get; set; }
+        [Required]
+        public int marks { get; set; }
+        public Student student { get; set; }
     }
 }
