@@ -4,7 +4,7 @@
 @inject NavigationManager nav
 <h3>Edit Student</h3>
 
-<!-- Add a table to display the list of students -->
+
 <table class="table">
     <thead>
         <tr>
@@ -22,7 +22,7 @@
                 <td>@student.major</td>
                 <td>@student.standing</td>
                 <td>
-                    <!-- Add a delete button for each student -->
+                    
                     <button class="btn btn-danger" @onclick="() => DeleteStudent(student.sid)">Delete</button>
                 </td>
             </tr>
@@ -30,7 +30,7 @@
     </tbody>
 </table>
 
-<!-- Add a form to edit or add a new student -->
+
 <h3>Edit/Add Student</h3>
 <EditForm Model="@Student" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -53,6 +53,7 @@
         <ValidationMessage For="@(() => Student.standing)" />
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
+    <button onclick="Query1a">Count students</button>
 </EditForm>
 
 @code {
@@ -73,20 +74,17 @@
         students = dbContext.Students.ToList();
         Console.WriteLine("Student data submitted successfully!");
     }
-
+    
     private void DeleteStudent(int studentId)
     {
-        // Delete the student from the database
+        
         var studentToDelete = dbContext.Students.Find(studentId);
         if (studentToDelete != null)
         {
             dbContext.Students.Remove(studentToDelete);
             dbContext.SaveChanges();
         }
-
-        // Refresh the list of students
         students = dbContext.Students.ToList();
-
         Console.WriteLine("Student deleted successfully!");
     }
 }

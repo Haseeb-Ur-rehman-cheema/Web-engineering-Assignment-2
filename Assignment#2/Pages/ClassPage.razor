@@ -4,8 +4,6 @@
 @inject SchoolDbContext DbContext
 
 <h3>Edit Class</h3>
-
-<!-- Add a table to display the list of classes -->
 <table class="table">
     <thead>
         <tr>
@@ -23,7 +21,7 @@
                 <td>@classItem.room_number</td>
                 <td>@classItem.fid</td>
                 <td>
-                    <!-- Add a delete button for each class -->
+                    
                     <button class="btn btn-danger" @onclick="() => DeleteClass(classItem.cid)">Delete</button>
                 </td>
             </tr>
@@ -31,7 +29,6 @@
     </tbody>
 </table>
 
-<!-- Add a form to edit or add a new class -->
 <h3>Edit/Add Class</h3>
 <EditForm Model="@Class" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -60,12 +57,10 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Save</button>
-    <Button onclick=""></Button>
 </EditForm>
 
 <h3>Classes with More Than 100 Students</h3>
 
-<!-- Display classes with more than 100 students -->
 <table class="table">
     <thead>
         <tr>
@@ -89,32 +84,26 @@
     private List<Class> Classes { get; set; }
     private List<Faculty> Faculties { get; set; } = new List<Faculty>();
     private List<Class> Classes100Students { get; set; }
-    protected override void OnInitialized()
-    {
-        // Fetch classes, faculties, and classes with more than 100 students from the database
-       
-    }
+    
 
     private void HandleValidSubmit()
     {
-        // Add or update the class in the database
+        
         if (Class.cid == 0)
         {
-            // If the class ID is 0, it's a new class, so add it to the database
+            
             DbContext.Classes.Add(Class);
         }
         else
         {
-            // If the class ID is not 0, it's an existing class, so update it in the database
+            
             DbContext.Classes.Update(Class);
         }
 
         DbContext.SaveChanges();
 
-        // Clear the form after submission
         Class = new Class();
 
-        // Refresh the list of classes
         Classes = DbContext.Classes.Include(c => c.fid).ToList();
 
         Console.WriteLine("Class data submitted successfully!");
@@ -122,15 +111,14 @@
 
     private void DeleteClass(int classId)
     {
-        // Delete the class from the database
+        
         var classToDelete = DbContext.Classes.Find(classId);
         if (classToDelete != null)
         {
             DbContext.Classes.Remove(classToDelete);
             DbContext.SaveChanges();
         }
-
-        // Refresh the list of classes
+        
         Classes = DbContext.Classes.Include(c => c.fid).ToList();
 
         Console.WriteLine("Class deleted successfully!");

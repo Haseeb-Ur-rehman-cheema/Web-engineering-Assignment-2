@@ -62,29 +62,26 @@
 
     protected override void OnInitialized()
     {
-        // Initialize the list of faculty members by fetching data from the database
+        
         faculties = DbContext.Faculties.ToList();
     }
      private void HandleValidSubmit()
     {
-        // Add or update the faculty member in the database
+        
         if (Faculty.fid == 0)
         {
-            // If the faculty ID is 0, it's a new faculty member, so add them to the database
+            
             DbContext.Faculties.Add(Faculty);
         }
         else
         {
-            // If the faculty ID is not 0, it's an existing faculty member, so update them in the database
             DbContext.Faculties.Update(Faculty);
         }
 
         DbContext.SaveChanges();
 
-        // Clear the form after submission
         Faculty = new Faculty();
 
-        // Refresh the list of faculty members
         faculties = DbContext.Faculties.ToList();
 
         Console.WriteLine("Faculty data submitted successfully!");
@@ -92,15 +89,12 @@
 
     private void DeleteFaculty(int facultyId)
     {
-        // Delete the faculty member from the database
         var facultyToDelete = DbContext.Faculties.Find(facultyId);
         if (facultyToDelete != null)
         {
             DbContext.Faculties.Remove(facultyToDelete);
             DbContext.SaveChanges();
         }
-
-        // Refresh the list of faculty members
         faculties = DbContext.Faculties.ToList();
 
         Console.WriteLine("Faculty member deleted successfully!");
